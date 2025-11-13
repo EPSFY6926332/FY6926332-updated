@@ -31,6 +31,63 @@
     Moreover, potential improvements to the model will be considered.
 </p>
 </main>
-  
+  <script>
+    async function getLastUpdatedTime() {
+      const username = 'EPSFY6926332';
+      const repo = 'FY6926332';
+      const url = `https://api.github.com/repos/${username}/${repo}/commits`;
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (!response.ok) throw new Error(`Error fetching data: ${response.status}`);
+        const commits = await response.json();
+        if (commits && commits.length > 0) {
+          const lastCommitDate = new Date(commits[0].commit.committer.date);
+          document.getElementById('last-updated').innerText =
+            `Last Modified Time: ${lastCommitDate.toLocaleString()}`;
+        } else {
+          document.getElementById('last-updated').innerText = 'No commits found in the repository.';
+        }
+      } catch (error) {
+        console.error('Error fetching update time:', error);
+        document.getElementById('last-updated').innerText = 'Error fetching update time.';
+      }
+    }
+
+    async function verifyLastUpdatedTime() {
+      document.getElementById('last-updated').innerText = 'Verifying...';
+      await getLastUpdatedTime();
+      alert("Last modified time has been successfully verified from GitHub API.");
+    }
+  </script>
+
+  <script>
+    // Function to calculate and display word count for a specified section
+  function displayWordCount(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (!element) return 0;
+    const text = element.textContent.trim().replace(/\s+/g, ' ');
+    const wordArray = text.split(' ').filter(word => word.length > 0);
+    return wordArray.length;
+  }
+
+  // Function to calculate and display total word count for sections after Abstract and before References
+  function displayTotalWordCount() {
+    const AbstractCount = displayWordCount("Abstract_InText");
+    const IntroductionCount = displayWordCount("Introduction_InText");
+    const MethodologyCount = displayWordCount("Methodology_InText");
+    const AnalysisCount = displayWordCount("Analysis_InText");
+    const ConclusionCount = displayWordCount("Conclusion_InText");
+    const ReferencesCount = displayWordCount("References_InText");
+
+    const totalWordCount = AbstractCount + IntroductionCount + MethodologyCount + AnalysisCount + ConclusionCount +ReferencesCount;
+    document.getElementById("totalWordCount").innerText = `Total word count: ${totalWordCount}`;
+  }
+
+  // Run the function when the page loads
+  window.addEventListener("load", displayTotalWordCount);
+  </script>
 </body>
 </html>
